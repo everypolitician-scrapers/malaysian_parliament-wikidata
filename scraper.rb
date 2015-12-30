@@ -26,16 +26,16 @@ module EveryPolitician
     def self.scrape_wikidata(h)
       langs = ((h[:lang] || h[:names].keys) + [:en]).flatten.uniq
       langpairs = h[:names].map { |lang, names| WikiData.ids_from_pages(lang.to_s, names) }
-      langpairs.each do |people|
-        people.each do |name, id|
-          data = WikiData::Fetcher.new(id: id).data(langs) rescue nil
-          unless data
-            warn "No data for #{id}"
-            next
-          end
-          data[:original_wikiname] = name
-          ScraperWiki.save_sqlite([:id], data)
+      combined  = langpairs.reduce({}) { |h, people| h.merge(people.invert) }
+
+      combined.each do |id, name|
+        data = WikiData::Fetcher.new(id: id).data(langs) rescue nil
+        unless data
+          warn "No data for #{id}"
+          next
         end
+        data[:original_wikiname] = name
+        ScraperWiki.save_sqlite([:id], data)
       end
     end
 
