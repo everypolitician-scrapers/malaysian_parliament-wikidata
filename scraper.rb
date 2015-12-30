@@ -1,32 +1,57 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-require 'json'
-require 'pry'
-require 'rest-client'
-require 'scraperwiki'
-require 'wikidata/fetcher'
-require 'mediawiki_api'
+module EveryPolitician
+  
+  module Wikidata
 
-def candidates
-  morph_api_url = 'https://api.morph.io/tmtmtmtm/malaysian_parliament-wp/data.json'
-  morph_api_key = ENV["MORPH_API_KEY"]
-  result = RestClient.get morph_api_url, params: {
-    key: morph_api_key,
-    query: "select DISTINCT(wikipedia__en) as wikiname from data"
-  }
-  JSON.parse(result, symbolize_names: true)
-end
+    require 'json'
+    require 'rest-client'
 
-WikiData.ids_from_pages('en', candidates.map { |c| c[:wikiname] }).each_with_index do |p, i|
-  puts i if (i % 50).zero?
-  data = WikiData::Fetcher.new(id: p.last).data('en') rescue nil
-  unless data
-    warn "No data for #{p}"
-    next
+    def self.morph_wikinames(h)
+      morph_api_url = 'https://api.morph.io/%s/data.json' % h[:source]
+      morph_api_key = ENV["MORPH_API_KEY"]
+      result = RestClient.get morph_api_url, params: {
+        key: morph_api_key,
+        query: "SELECT DISTINCT(#{h[:column]}) AS wikiname FROM data"
+      }
+      JSON.parse(result, symbolize_names: true).map { |h| h[:wikiname] }.compact
+    end
+
+    #-------------------------------------------------------------------
+
+    require 'wikidata/fetcher'
+    require 'scraperwiki'
+
+    def self.scrape_wikidata(h)
+      langs = ((h[:lang] || h[:names].keys) + [:en]).flatten.uniq
+      langpairs = h[:names].map { |lang, names| WikiData.ids_from_pages(lang.to_s, names) }
+      langpairs.each do |people|
+        people.each do |name, id|
+          data = WikiData::Fetcher.new(id: id).data(langs) rescue nil
+          unless data
+            warn "No data for #{id}"
+            next
+          end
+          data[:original_wikiname] = name
+          warn data
+          ScraperWiki.save_sqlite([:id], data)
+        end
+      end
+    end
+
+    #-------------------------------------------------------------------
+
+    require 'rest-client'
+
+    def self.notify_rebuilder
+      RestClient.post ENV['MORPH_REBUILDER_URL'], {} if ENV['MORPH_REBUILDER_URL']
+    end
   end
-  ScraperWiki.save_sqlite([:id], data)
 end
 
-warn RestClient.post ENV['MORPH_REBUILDER_URL'], {} if ENV['MORPH_REBUILDER_URL']
+# require 'pry'
+names = EveryPolitician::Wikidata.morph_wikinames(source: 'tmtmtmtm/malaysian_parliament-wp', column: 'wikipedia__en')
+EveryPolitician::Wikidata.scrape_wikidata(names: { en: names })
+warn EveryPolitician::Wikidata.notify_rebuilder
 
