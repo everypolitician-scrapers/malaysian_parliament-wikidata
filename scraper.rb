@@ -3,7 +3,8 @@
 
 require 'wikidata/fetcher'
 
-names = EveryPolitician::Wikidata.morph_wikinames(source: 'tmtmtmtm/malaysian_parliament-wp', column: 'wikipedia__en')
-EveryPolitician::Wikidata.scrape_wikidata(names: { en: names })
-warn EveryPolitician::Wikidata.notify_rebuilder
+en_names = EveryPolitician::Wikidata.morph_wikinames(source: 'tmtmtmtm/malaysian_parliament-wp', column: 'wikipedia__en')
+ms_names = WikiData::Category.new( 'Kategori:Ahli Parlimen Malaysia 1959', 'ms').member_titles
+
+EveryPolitician::Wikidata.scrape_wikidata(names: { en: names, ms: ms_names })
 
