@@ -11,6 +11,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 gem 'activesupport-inflector'
 gem 'colorize'
 gem 'everypolitician', github: 'everypolitician/everypolitician-ruby'
+gem 'everypolitician-popolo', github: 'everypolitician/everypolitician-popolo'
 gem 'i18n'
 gem 'mediawiki_api'
 gem 'nokogiri'
