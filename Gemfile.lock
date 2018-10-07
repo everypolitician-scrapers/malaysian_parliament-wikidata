@@ -15,9 +15,9 @@ GIT
 
 GIT
   remote: https://github.com/everypolitician/wikidata-fetcher.git
-  revision: 4f459d496e46eded6efed698c76633e2c276a78f
+  revision: d71b4bce80c8a9b1b95c662f8d1fb05039ada533
   specs:
-    wikidata-fetcher (0.21.0)
+    wikidata-fetcher (0.21.1)
       colorize
       diskcached
       json
@@ -65,14 +65,14 @@ GEM
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
     excon (0.62.0)
-    faraday (0.15.2)
+    faraday (0.15.3)
       multipart-post (>= 1.2, < 3)
     faraday-cookie_jar (0.0.6)
       faraday (>= 0.7.4)
       http-cookie (~> 1.0.0)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
-    hashie (3.5.7)
+    hashie (3.6.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httpclient (2.8.3)
@@ -91,7 +91,7 @@ GEM
     mini_portile2 (2.3.0)
     multipart-post (2.0.0)
     netrc (0.11.0)
-    nokogiri (1.8.4)
+    nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
     open-uri-cached (0.0.5)
     parallel (1.12.1)
@@ -107,7 +107,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rubocop (0.58.2)
+    rubocop (0.59.2)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.5, != 2.5.1.1)
@@ -149,7 +149,7 @@ DEPENDENCIES
   wikisnakker!
 
 RUBY VERSION
-   ruby 2.3.3p222
+   ruby 2.4.4p296
 
 BUNDLED WITH
-   1.16.2
+   1.16.5
